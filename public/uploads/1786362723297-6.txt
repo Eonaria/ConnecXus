@@ -1,0 +1,155 @@
+โปรเจคนี้จะใช้เป็นnuxt
+app เอาไว้เก็บหน้าบ้าน
+serverเอาไว้เก็บหลังบ้าน
+โดยไฟล์หน้าเว็บเป็น.vue
+หลังบ้านเป็น.ts
+กำตกแต่ง เป็น tailwindcss
+การแจ้งเตีอนเป็นSweetAlert2และToastify.js
+ฐานเป็น mysql
+ฐานตามนี้
+Table users {
+  user_id int [pk, increment]
+  username varchar [unique]
+  password varchar
+  firstname varchar
+  lastname varchar
+  phone varchar
+  email varchar
+  address text
+  profile text
+  role ROLE
+  is_active tinyint
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table category {
+  category_id int [pk, increment]
+  category_name varchar
+}
+
+Table products {
+  product_id int [pk, increment]
+  product_name varchar
+  brand varchar
+  description text
+  price decimal
+  stock int
+  picture varchar
+  category_id int [ref: > category.category_id]
+  is_active tinyint
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table cart {
+  cart_id int [pk, increment]
+  user_id int [ref: > users.user_id]
+  product_id int [ref: > products.product_id]
+  quantity int
+  added_at timestamp
+
+  indexes {
+    (user_id, product_id) [unique]
+  }
+}
+
+Table orders {
+  order_id int [pk, increment]
+  user_id int [ref: > users.user_id]
+  total_price decimal
+  status ORDER_STATUS
+  shipping_address text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table order_details {
+  order_detail_id int [pk, increment]
+  order_id int [ref: > orders.order_id]
+  product_id int [ref: > products.product_id]
+  quantity int
+  unit_price decimal
+  total_price decimal
+}
+
+Table payments {
+  payment_id int [pk, increment]
+  order_id int [ref: > orders.order_id, unique]
+  payment_method PAYMENT_METHOD
+  payment_status PAYMENT_STATUS
+  slip_image varchar
+  payment_date timestamp
+  amount decimal
+  verified_by int [ref: > users.user_id]
+}
+
+Table issues {
+  issue_id int [pk, increment]
+  user_id int [ref: > users.user_id]
+  order_id int [ref: > orders.order_id]
+  subject varchar
+  message text
+  status ISSUE_STATUS
+  created_at timestamp
+}
+
+Table issue_reply {
+  reply_id int [pk, increment]
+  issue_id int [ref: > issues.issue_id]
+  sender_id int [ref: > users.user_id]
+  message text
+  reply_time timestamp
+}
+
+Table promotions {
+  promotion_id int [pk, increment]
+  title varchar
+  description text
+  image varchar
+  start_date date
+  end_date date
+}
+
+Table promotion_products {
+  promotion_product_id int [pk, increment]
+  promotion_id int [ref: > promotions.promotion_id]
+  product_id int [ref: > products.product_id]
+  discount_percent decimal
+  discount_price decimal
+
+  indexes {
+    (promotion_id, product_id) [unique]
+  }
+}
+
+Enum ROLE {
+  admin
+  member
+}
+
+Enum ORDER_STATUS {
+  pending
+  paid
+  shipped
+  completed
+  cancelled
+}
+
+Enum PAYMENT_METHOD {
+  transfer
+  cod
+}
+
+Enum PAYMENT_STATUS {
+  unpaid
+  paid
+  failed
+}
+
+Enum ISSUE_STATUS {
+  open
+  replied
+  closed
+}
+

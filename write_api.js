@@ -1,0 +1,3 @@
+const fs = require('fs');
+const code = import { getDb } from '../../utils/db'\n\nexport default defineEventHandler(async (event) => {\n  const query = getQuery(event)\n  let q = query.q\n  if (!q) return { users: [] }\n  if (q.startsWith('@')) q = q.substring(1)\n  const db = await getDb()\n  const searchPattern = '%%'\n  const [users] = await db.query('SELECT id, username, display_name, avatar_url, bio FROM users WHERE username LIKE ? OR display_name LIKE ? LIMIT 5', [searchPattern, searchPattern])\n  return { users }\n});
+fs.writeFileSync('d:/ConnecXus/connecxus/server/api/users/search.get.ts', code);
